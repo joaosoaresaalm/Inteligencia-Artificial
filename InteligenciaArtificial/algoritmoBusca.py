@@ -19,31 +19,6 @@ def algoritmo_dfs(grafo, estadoInicial, estadoFinal, caminhoVisitado = None):
 
     return caminhoVisitado
 
-
-# Busca em Largura
-def algoritmo_bfs (grafo, estadoInicial, estadoFinal):
-
-    vizinhosVisitados = []
-    fila = [estadoInicial]
-    print(fila)
-
-    if estadoInicial == estadoFinal:
-        return [estadoInicial]
-
-    while fila is not None:
-
-        removerNo = fila.pop(0)
-
-        if removerNo not in vizinhosVisitados:
-            vizinhosVisitados.append(removerNo)
-            w = grafo[removerNo]
-
-            for u in w:
-                fila.append(u)
-
-        if removerNo == estadoFinal:
-            return print(vizinhosVisitados)
-
 # Busca em Largura
 def bfs_algoritm(grafo, estadoInicial,estadoFinal):
     # Acompanha todos os nós visitados
@@ -62,16 +37,11 @@ def bfs_algoritm(grafo, estadoInicial,estadoFinal):
             vizinhos = grafo[node]
             for proximo in vizinhos:
                 fila.append(proximo)
+                
         if node == estadoFinal:
-
             return visitados
 
-
-
-
-
-
-
+#Função que verifica a distância {Distance Manhattan} e retorna o custo mínimo
 def heuristica(grafo, origem, objetivo, cidadesOrdem, matrizDistancia, cidadesVisitadas):
 
     min_heu = math.inf
@@ -96,7 +66,6 @@ def heuristica(grafo, origem, objetivo, cidadesOrdem, matrizDistancia, cidadesVi
         else:
             distancia_heu = matrizDistancia[atual][destino]
 
-
       #F(n) =          H(n)                   +         G(n)
         f_n = grafo[origem][cidade]['weight'] + distancia_heu
 
@@ -106,7 +75,7 @@ def heuristica(grafo, origem, objetivo, cidadesOrdem, matrizDistancia, cidadesVi
 
     return tempCidade
 
-
+#Algoritmo A* com recursão
 def aEstrela(grafo, origem, objetivo, cidadesOrdem, matrizDistancia, cidadesVisitadas = None):
     if cidadesVisitadas is None:
         cidadesVisitadas = [estadoInicial]
@@ -129,33 +98,11 @@ def mostrarRota(busca):
             print(colored(str(i + 1) + '- ' + busca[i], 'red'))
         else:
             print(colored(str(i + 1) + '- ' + busca[i], 'yellow'))
-
-'''
-def aEstrela(grafo, start, goal):
-    fila = [start]
-    visitados = []
-    while fila:
-        node = fila.pop(0)
-        visitados.append(node)
-        vizinhos = grafo[node]
-
-
-
-        for p in vizinhos:
-            new_cost = cost_so_far[node] + graph.cost(node, p)
-            if p not in cost_so_far or new_cost < cost_so_far[p]:
-                cost_so_far[p] = new_cost
-                priority = new_cost + heuristic(goal, p)
-                fila.put(p, priority)
-                came_from[p] = node
-
-        if node == goal:
-            return node
-'''
-
+            
+#Chamada de funções do módulo GRafo
 grafo = Grafo()
 ordenacaoCidades, matDistancia = heuristicaDistancia()
-print(colored("oi", 'yellow'))
+
 
 while True:
 
@@ -196,7 +143,8 @@ while True:
     elif escolhaBusca == 10:
         break
 
-
+        
+#Referências Bibliógraficas 
 
 #https://www.programiz.com/dsa/graph-bfs
 #https://networkx.github.io/documentation/stable/tutorial.html
