@@ -2,6 +2,7 @@ from Grafo import*
 import math
 from termcolor import colored
 
+
 # Busca em Profundidade
 def algoritmo_dfs(grafo, estadoInicial, estadoFinal, caminhoVisitado = None):
 
@@ -18,6 +19,7 @@ def algoritmo_dfs(grafo, estadoInicial, estadoFinal, caminhoVisitado = None):
                 caminhoVisitado = algoritmo_dfs(grafo, i, estadoFinal, caminhoVisitado + [i])
 
     return caminhoVisitado
+
 
 # Busca em Largura
 def bfs_algoritm(grafo, estadoInicial,estadoFinal):
@@ -37,11 +39,12 @@ def bfs_algoritm(grafo, estadoInicial,estadoFinal):
             vizinhos = grafo[node]
             for proximo in vizinhos:
                 fila.append(proximo)
-                
+
         if node == estadoFinal:
+
             return visitados
 
-#Função que verifica a distância {Distance Manhattan} e retorna o custo mínimo
+#Função Heurística para o o Pathfinder : F(n) = H(n) + G(n)
 def heuristica(grafo, origem, objetivo, cidadesOrdem, matrizDistancia, cidadesVisitadas):
 
     min_heu = math.inf
@@ -49,11 +52,12 @@ def heuristica(grafo, origem, objetivo, cidadesOrdem, matrizDistancia, cidadesVi
 
     for cidade in grafo[origem]:
         distancia_heu = None
-        atual = None
-        destino = None
+        atual = None #armazena a posição(da cidade) na coluna do csv
+        destino = None #armazena a posição(da cidade) na linha do csv
 
         #Calcula a distância em Linha reta da Cidade atual até o Destino. H(n)
         for i in range(len(cidadesOrdem)):
+            print(cidade == cidadesOrdem[i])
 
             if cidade == cidadesOrdem[i]:
                 atual = i
@@ -66,7 +70,8 @@ def heuristica(grafo, origem, objetivo, cidadesOrdem, matrizDistancia, cidadesVi
         else:
             distancia_heu = matrizDistancia[atual][destino]
 
-      #F(n) =          H(n)                   +         G(n)
+
+      #F(n) =          H(n): Custo para ir até o nó                   +         G(n): Custo para alcançar o nó
         f_n = grafo[origem][cidade]['weight'] + distancia_heu
 
         if f_n < min_heu and (cidade not in cidadesVisitadas):
@@ -75,7 +80,8 @@ def heuristica(grafo, origem, objetivo, cidadesOrdem, matrizDistancia, cidadesVi
 
     return tempCidade
 
-#Algoritmo A* com recursão
+
+#Algoritmo de A*
 def aEstrela(grafo, origem, objetivo, cidadesOrdem, matrizDistancia, cidadesVisitadas = None):
     if cidadesVisitadas is None:
         cidadesVisitadas = [estadoInicial]
@@ -87,7 +93,6 @@ def aEstrela(grafo, origem, objetivo, cidadesOrdem, matrizDistancia, cidadesVisi
 
     return aEstrela(grafo, proxCidade, objetivo, cidadesOrdem, matrizDistancia, cidadesVisitadas + [proxCidade])
 
-
 # Printa a Rota feita pelo algoritmo escolhido
 def mostrarRota(busca):
 
@@ -98,26 +103,46 @@ def mostrarRota(busca):
             print(colored(str(i + 1) + '- ' + busca[i], 'red'))
         else:
             print(colored(str(i + 1) + '- ' + busca[i], 'yellow'))
-            
-#Chamada de funções do módulo GRafo
+
+
+def showGrafo(grafo, busca):
+    pos = nx.fruchterman_reingold_layout(grafo)
+    plt.axis('off')
+    nx.draw_networkx_nodes(grafo, pos, node_size=180, node_color='violet')
+    nx.draw_networkx_edges(grafo, pos, alpha=0.8)
+    nx.draw_networkx_labels(grafo, pos, font_size=9)
+
+    vertices = [(busca[n], busca[n + 1]) for n in range(len(busca) - 1)]
+    nx.draw_networkx_edges(grafo, pos=pos, edgelist=vertices, edge_color='blue', width=4.0,
+                           alpha=0.5)  #
+    nx.draw_networkx_nodes(grafo, pos, nodelist=[busca[0]], node_size=80,
+                           node_color='green')
+    nx.draw_networkx_nodes(grafo, pos, nodelist=[busca[-1]], node_size=80, node_color='red')
+    plt.show()
+
+
+#Chamadas de funções do Grafo
+
 grafo = Grafo()
 ordenacaoCidades, matDistancia = heuristicaDistancia()
 
 
 while True:
 
-    escolhaBusca =int(input("Escolha qual Algoritmo de Busca \n1- Busca em Profundidade\n2 - Busca em Largura\n3-Pathfinder(A*)\n10 - Finalizar\n"))
+    escolhaBusca =int(input(colored("Escolha qual Algoritmo de Busca \n1- Busca em Profundidade\n2- Busca em Largura\n3-Pathfinder(A*)\n10- Finalizar\n", 'blue')))
 
     if escolhaBusca == 1:
         estadoInicial = input("Origem: \n")
         if estadoInicial not in var:
-            print('Cidade origem inválida')
+            print(colored('Cidade origem inválida', 'blue'))
 
         estadoFinal = input("Destino: \n")
         if estadoFinal not in var:
             print("Cidade destino inválida")
         busca = algoritmo_dfs(var,estadoInicial, estadoFinal)
         mostrarRota(busca)
+        showGrafo(grafo,busca)
+
     elif escolhaBusca == 2:
         estadoInicial = input("Origem: \n")
         if estadoInicial not in var:
@@ -129,6 +154,7 @@ while True:
 
         busca= bfs_algoritm(var, estadoInicial,estadoFinal)
         mostrarRota(busca)
+        showGrafo(grafo, busca)
     if escolhaBusca == 3:
         estadoInicial = input("Origem: \n")
         if estadoInicial not in grafo:
@@ -140,12 +166,14 @@ while True:
 
         busca = aEstrela(grafo, estadoInicial, estadoFinal,ordenacaoCidades, matDistancia)
         mostrarRota(busca)
+        showGrafo(grafo, busca)
     elif escolhaBusca == 10:
         break
 
-        
-#Referências Bibliógraficas 
 
+#Referências Bibliográficas
+
+#https://www.python-course.eu/networkx.php
 #https://www.programiz.com/dsa/graph-bfs
 #https://networkx.github.io/documentation/stable/tutorial.html
 #['Fagaras', 'Sibiu', 'Bucharest', 'Arad', 'Oradea', 'Rimnicu-Vilcea', 'Pitesti', 'Urziceni', 'Giurgiu', 'Zerind', 'Timisoara', 'Craiova']
